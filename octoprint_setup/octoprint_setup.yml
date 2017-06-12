@@ -13,11 +13,36 @@
         - sudo
         - screen
         - python2-virtualenv
+        - networkmanager
+        - python-pip
+        - gcc
+        - curaengine
+        - yajl
+        - pkg-config
+        - make
+        - fakeroot
+        - linux-raspberrypi-headers
       become: yes
+    - pacman:
+        name: "{{ item }}"
+        state: absent
+      with_items:
+        - network
+      become: yes
+    - name: Starts and enable services
+      service:
+        name: "{{ item }}"
+        enabled: yes
+        state: started
+      with_items:
+        - NetworkManager
+      become: yes
+      ignore_errors: true
     - name: Descarga octoprint
       git:
         repo: https://github.com/foosel/OctoPrint.git
         dest: "{{ octo_path }}"
+        update: yes
     - name: Instala venv de python
       command: /usr/bin/virtualenv2 {{ octo_path }}/venv
       args:
