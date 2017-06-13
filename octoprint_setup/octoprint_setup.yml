@@ -4,7 +4,8 @@
   vars:
     octo_path: "{{ ansible_env.HOME }}/Octoprint-git"
   tasks:
-    - pacman:
+    - name: Instala dependencias en Arch
+      pacman:
         name: "{{ item }}"
         state: installed
       with_items:
@@ -21,9 +22,17 @@
         - pkg-config
         - make
         - fakeroot
+      become: yes
+    - name: Instala dependencias en Arch ARM
+      pacman:
+        name: "{{ item }}"
+        state: installed
+      with_items:
         - linux-raspberrypi-headers
       become: yes
-    - pacman:
+      when: ansible_architecture == "armv7l"
+    - name: Remueve paquetes en conflicto
+      pacman:
         name: "{{ item }}"
         state: absent
       with_items:
